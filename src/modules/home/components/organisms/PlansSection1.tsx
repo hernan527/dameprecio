@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Scale, Sparkles } from "lucide-react";
+import { Scale, Sparkles, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HomePlanCard, HomePlanData } from "./HomePlanCard";
 import { HomeComparisonModal } from "./HomeComparisonModal";
 import { CotizadorSidebar } from "./CotizadorSidebar"; 
 import { normalizeLogoPath } from "@/lib/supabase-helpers";
 
-// Componente Skeleton local para asegurar que no falle por importación
+// Skeleton para carga
 const HomePlanSkeleton = () => (
   <div className="h-full animate-pulse">
     <div className="bg-white border border-slate-100 rounded-[2.5rem] overflow-hidden flex flex-col h-full shadow-sm p-6">
@@ -20,9 +20,7 @@ const HomePlanSkeleton = () => (
         </div>
       </div>
       <div className="grid grid-cols-2 gap-2 mb-6">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="bg-slate-50 h-[90px] rounded-2xl" />
-        ))}
+        {[1, 2, 3, 4].map((i) => <div key={i} className="bg-slate-50 h-[90px] rounded-2xl" />)}
       </div>
       <div className="mt-auto bg-slate-100 h-24 rounded-3xl" />
     </div>
@@ -34,81 +32,63 @@ export const PlansSection = () => {
   const [showModal, setShowModal] = useState(false);
   const [precios, setPrecios] = useState<any>(null);
   const [planesMock, setPlanesMock] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
 
   const [filtros, setFiltros] = useState({
     edad1: 18,
     edad2: 0,
-    hijos: 1,
+    hijos: 0,
     sueldo: 0,
     tipo: '0'
   });
 
-  // Carga de Precios (13MB)
+  // Carga de Datos
   useEffect(() => {
-    fetch('/assets/data/precios_optimizados.json?v=2')
-      .then(res => res.json())
-      .then(data => {
-        setPrecios(data);
-        console.log("✅ Precios cargados");
-      })
-      .catch(err => console.error("❌ Error precios:", err));
+    fetch('/assets/data/precios_optimizados.json?v=2').then(res => res.json()).then(setPrecios).catch(console.error);
+    fetch('/assets/data/planes_mock.json').then(res => res.json()).then(setPlanesMock).catch(console.error);
   }, []);
 
-  // Carga de Estructura de Planes
-  useEffect(() => {
-    fetch('/assets/data/planes_mock.json')
-      .then(res => res.json())
-      .then(data => {
-        setPlanesMock(data);
-        console.log("✅ Mock cargado");
-      })
-      .catch(err => console.error("❌ Error mock:", err));
-  }, []);
-
-  // ID de búsqueda
+  // Generador de ID
   const currentTargetId = useMemo(() => {
     const e1 = String(filtros.edad1).padStart(2, '0');
     const e2 = String(filtros.edad2 || '00').padStart(2, '0');
-    const h  = String(filtros.hijos).padStart(2, '0');
-    const t  = filtros.sueldo > 0 ? '1' : '0';
+    const h = String(filtros.hijos).padStart(2, '0');
+    const t = filtros.sueldo > 300000 ? '1' : '0';
     return `${e1}${e2}${h}${t}`;
-  }, [filtros.edad1, filtros.edad2, filtros.hijos, filtros.sueldo]);
+  }, [filtros]);
 
-  // Lógica de Matching
-  // Busca el bloque de livePlans y asegúrate de que se vea así:
-const livePlans = useMemo(() => {
+  // Lógica de "Vendedor Experto" y Matching
+  const livePlans = useMemo(() => {
   if (!precios || !planesMock) return [];
   
   const idFila = String(currentTargetId);
   const dataFila = precios[idFila];
-  if (!dataFila) return [];
-
-  const planesBase = planesMock.planes || [];
   const aporte = filtros.sueldo > 0 ? Math.round(filtros.sueldo * 0.0765) : 0;
 
-  return planesBase.map((plan: any) => {
-    const precioInfo = dataFila[plan.item_id];
-    if (!precioInfo) return null;
+  return (planesMock.planes || []).map((plan: any) => {
+    const precioInfo = dataFila ? dataFila[plan.item_id] : null;
+
+    // Mensajes dinámicos si no hay precio
+    let mensajeCustom = "Precio a medida";
+    if (!precioInfo) {
+      if (filtros.sueldo > 0) mensajeCustom = "Cotizar con aportes";
+      else if (filtros.edad2 > 0) mensajeCustom = "Plan Matrimonial";
+      else if (filtros.hijos > 0) mensajeCustom = "Plan Familiar";
+      else mensajeCustom = "Plan Individual";
+    }
 
     return {
-      ...plan, 
+      ...plan, // Esto trae el id original y otras props de la DB
       id: String(plan.id),
-      // 🚩 ESTA ES LA LÍNEA QUE FALTA:
-      name: plan.nombre_plan, 
-      price: Math.max(0, (precioInfo.p || 0) - aporte),
-      originalPrice: precioInfo.p || 0,
-      precio_total: precioInfo.p,
-      precio_lista: precioInfo.v,
-      precio_final: Math.max(0, (precioInfo.p || 0) - aporte),
-      valor_aporte: aporte,
-      logo: normalizeLogoPath(plan.logo || plan.empresas?.imagenes?.logo),
+      name: plan.nombre_plan || plan.name, // 👈 ASEGURAMOS QUE NAME EXISTA
+      price: precioInfo ? Math.max(0, (precioInfo.p || 0) - aporte) : null,
+      originalPrice: precioInfo ? (precioInfo.p || 0) : null,
+      logo: normalizeLogoPath(plan.logo || plan.empresas?.logo_url), // 👈 ASEGURAMOS EL LOGO
       empresa: plan.empresa_nombre || plan.empresas?.nombre || "Prepaga",
-      // Aseguramos clínicas para el modal
-      clinicsData: plan.plan_clinica?.map((pc: any) => pc.clinicas).filter(Boolean) || []
+      tienePrecio: !!precioInfo,
+      mensajePersonalizado: mensajeCustom
     };
-  }).filter(Boolean);
-}, [planesMock, currentTargetId, filtros.sueldo, precios]);
+  });
+}, [planesMock, currentTargetId, filtros, precios]);
 
   const togglePlan = (planId: string) => {
     setSelectedPlans(prev => 
@@ -118,13 +98,11 @@ const livePlans = useMemo(() => {
     );
   };
 
-// Busca este bloque en tu PlansSection.tsx y reemplázalo:
-// Busca este bloque en tu PlansSection.tsx y reemplázalo:
-const selectedPlanData = useMemo(() => {
-  return selectedPlans
-    .map((id) => livePlans.find((p) => String(p.id) === String(id)))
-    .filter((p): p is any => p !== undefined); // Filtro estricto para que no pasen nulos
-}, [selectedPlans, livePlans]);
+  const selectedPlanData = useMemo(() => {
+    return selectedPlans
+      .map((id) => livePlans.find((p) => String(p.id) === String(id)))
+      .filter((p): p is any => p !== undefined);
+  }, [selectedPlans, livePlans]);
 
   const isLoading = !precios || !planesMock;
 
@@ -136,30 +114,29 @@ const selectedPlanData = useMemo(() => {
             <Sparkles className="w-4 h-4 text-primary" />
             <span className="text-sm font-bold text-primary uppercase tracking-wider">Cotizador Online</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-black italic text-foreground">
+          <h2 className="text-4xl md:text-5xl font-black italic text-foreground leading-tight">
             Versus <span className="text-primary">Prepagas</span>
           </h2>
         </div>
 
+        {/* ESTRUCTURA FLEX: items-start es la clave del sticky */}
         <div className="flex flex-col lg:flex-row gap-8 items-start relative pt-0">
-          {/* SIDEBAR */}
-          <aside className="w-full lg:w-[350px] sticky top-0 self-start z-40">
-            <CotizadorSidebar filtros={filtros} setFiltros={setFiltros} />
+          
+          {/* SIDEBAR COLUMNA */}
+          <aside className="w-full lg:w-[350px] relative shrink-0">
+            <div className="lg:sticky lg:top-24 z-40 transition-all">
+              <CotizadorSidebar filtros={filtros} setFiltros={setFiltros} />
+            </div>
           </aside>
 
           {/* MAIN CONTENT */}
-          <main className="flex-1 w-full">
+          <main className="flex-1 w-full min-w-0">
             {isLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[1, 2, 3, 4, 5, 6].map((i) => <HomePlanSkeleton key={i} />)}
-              </div>
-            ) : livePlans.length === 0 ? (
-              <div className="py-20 text-center text-muted-foreground border-2 border-dashed rounded-[2.5rem]">
-                <p className="text-xl font-bold">No se encontraron planes.</p>
-                <p className="text-sm">ID: {currentTargetId}</p>
+                {[1, 2, 3].map((i) => <HomePlanSkeleton key={i} />)}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-40">
                 <AnimatePresence mode="popLayout">
                   {livePlans.map((plan, index) => (
                     <HomePlanCard
@@ -168,7 +145,11 @@ const selectedPlanData = useMemo(() => {
                       index={index}
                       isSelected={selectedPlans.includes(plan.id)}
                       onSelect={() => togglePlan(plan.id)}
-                      onWhatsApp={() => window.open(`https://wa.me/5491100000000`)}
+                      // Si no tiene precio, el botón de la card debería llevar a WhatsApp directamente
+                      onWhatsApp={() => {
+                        const texto = `Hola! Quiero cotizar el plan ${plan.name} de ${plan.empresa}. Perfil: Titular ${filtros.edad1} años${filtros.edad2 ? ', Cónyuge ' + filtros.edad2 : ''}${filtros.hijos ? ', ' + filtros.hijos + ' hijos' : ''}.`;
+                        window.open(`https://wa.me/5491100000000?text=${encodeURIComponent(texto)}`);
+                      }}
                     />
                   ))}
                 </AnimatePresence>
@@ -178,7 +159,7 @@ const selectedPlanData = useMemo(() => {
         </div>
       </div>
 
-      {/* COMPARISON BAR */}
+      {/* BARRA COMPARADORA */}
       <AnimatePresence>
         {selectedPlans.length > 0 && (
           <motion.div 
@@ -198,7 +179,7 @@ const selectedPlanData = useMemo(() => {
               <Button 
                 onClick={() => setShowModal(true)} 
                 disabled={selectedPlans.length < 2}
-                className="font-bold rounded-xl"
+                className="font-bold rounded-xl h-10 px-6 uppercase text-xs"
               >
                 <Scale className="w-4 h-4 mr-2" />
                 {selectedPlans.length === 2 ? "Comparar ahora" : "Selecciona 2"}
@@ -212,7 +193,10 @@ const selectedPlanData = useMemo(() => {
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         plans={selectedPlanData}
-        onWhatsApp={(name) => window.open(`https://wa.me/5491100000000?text=Consulta`)}
+        onWhatsApp={(name) => {
+          const texto = `Hola! Me interesa comparar el plan ${name}.`;
+          window.open(`https://wa.me/5491100000000?text=${encodeURIComponent(texto)}`);
+        }}
       />
     </section>
   );
