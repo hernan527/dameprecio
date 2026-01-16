@@ -1,0 +1,2029 @@
+
+
+// ################################################
+// ARCHIVO: D:\CV\Proyectos_opeen-Lovable\proyecto-front-react-limpio\blank-canvas-project\src\modules\home\components\organisms\BattleHeroSection.tsx
+// ################################################
+
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Swords, Trophy, Zap, Shield, ArrowRight, Sparkles, Star, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+interface BattleHeroSectionProps {
+  onQuoteClick: () => void;
+}
+
+// Empresas para el efecto visual
+const BATTLE_PAIRS = [
+  { left: { name: "GALENO", logo: "galeno.webp", price: "$89.000" }, right: { name: "SWISS MEDICAL", logo: "swissmedical.webp", price: "$95.000" } },
+  { left: { name: "OSDE", logo: "osde.png", price: "$120.000" }, right: { name: "OMINT", logo: "omint.webp", price: "$115.000" } },
+  { left: { name: "MEDIFE", logo: "medife.webp", price: "$75.000" }, right: { name: "SANCOR SALUD", logo: "sancorsalud.webp", price: "$72.000" } },
+];
+
+export const BattleHeroSection = ({ onQuoteClick }: BattleHeroSectionProps) => {
+  const [currentPair, setCurrentPair] = useState(0);
+  const [showWinner, setShowWinner] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShowWinner(true);
+      setTimeout(() => {
+        setShowWinner(false);
+        setCurrentPair((prev) => (prev + 1) % BATTLE_PAIRS.length);
+      }, 2000);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const pair = BATTLE_PAIRS[currentPair];
+
+  return (
+    <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-background">
+      {/* ANIMATED BACKGROUND */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Battle Arena Glow */}
+        <motion.div 
+          animate={{ 
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3]
+          }}
+          transition={{ duration: 4, repeat: Infinity }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-primary/20 via-transparent to-transparent rounded-full"
+        />
+        
+        {/* Left Team Glow */}
+        <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-primary/30 rounded-full filter blur-[100px] opacity-60" />
+        
+        {/* Right Team Glow */}
+        <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-accent/30 rounded-full filter blur-[100px] opacity-60" />
+        
+        {/* Grid pattern */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `linear-gradient(hsl(var(--primary) / 0.3) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.3) 1px, transparent 1px)`,
+            backgroundSize: '60px 60px'
+          }}
+        />
+      </div>
+
+      {/* CONTENT */}
+      <div className="container mx-auto px-4 relative z-20 py-20">
+        
+        {/* Top Badge */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex justify-center mb-8"
+        >
+          <div className="inline-flex items-center gap-2 glass-button rounded-full px-5 py-2.5">
+            <Swords className="w-4 h-4 text-primary" />
+            <span className="text-sm font-bold text-foreground">COMPARADOR INTELIGENTE</span>
+            <Sparkles className="w-4 h-4 text-accent" />
+          </div>
+        </motion.div>
+
+        {/* Main Headline */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-center mb-12"
+        >
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight mb-4">
+            <span className="text-gradient">Enfrentá</span> a las prepagas,
+            <br />
+            <span className="text-foreground">elegí la ganadora.</span>
+          </h1>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+            Compará dos planes lado a lado y descubrí cuál te da más por menos. 
+            <span className="text-primary font-semibold"> Sin vueltas, sin letra chica.</span>
+          </p>
+        </motion.div>
+
+        {/* BATTLE ARENA VISUAL */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4 }}
+          className="max-w-4xl mx-auto mb-12"
+        >
+          <div className="glass-card p-6 md:p-8 rounded-3xl relative overflow-hidden">
+            {/* Battle Label */}
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-foreground/10 backdrop-blur-md rounded-full px-4 py-1 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+              Vista previa en vivo
+            </div>
+
+            <div className="flex items-center justify-center gap-4 md:gap-8 pt-8">
+              {/* Left Plan */}
+              <motion.div
+                key={`left-${currentPair}`}
+                initial={{ x: -50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -50, opacity: 0 }}
+                className={cn(
+                  "flex-1 max-w-[180px] md:max-w-[220px] p-4 md:p-6 rounded-2xl border-2 transition-all",
+                  showWinner && pair.left.price < pair.right.price
+                    ? "border-success bg-success/10 shadow-lg shadow-success/20"
+                    : "border-border bg-card/50"
+                )}
+              >
+                <div className="w-16 h-16 md:w-20 md:h-20 mx-auto bg-white rounded-xl p-2 mb-4 shadow-md">
+                  <img 
+                    src={`/assets/imagenes/card-header/${pair.left.logo}`} 
+                    alt={pair.left.name}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <p className="text-center font-bold text-foreground text-sm md:text-base">{pair.left.name}</p>
+                <p className="text-center text-xl md:text-2xl font-black text-primary mt-2">{pair.left.price}</p>
+                <p className="text-center text-xs text-muted-foreground">por mes</p>
+                
+                <AnimatePresence>
+                  {showWinner && pair.left.price < pair.right.price && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                      className="flex items-center justify-center gap-1 mt-3 text-success text-xs font-bold"
+                    >
+                      <Trophy className="w-4 h-4" /> ¡GANA!
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+
+              {/* VS Badge */}
+              <motion.div
+                animate={{ 
+                  rotate: showWinner ? [0, 360] : 0,
+                  scale: showWinner ? [1, 1.2, 1] : 1
+                }}
+                transition={{ duration: 0.5 }}
+                className="shrink-0 w-14 h-14 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-primary via-accent to-primary flex items-center justify-center shadow-xl"
+              >
+                <span className="text-lg md:text-2xl font-black text-white">VS</span>
+              </motion.div>
+
+              {/* Right Plan */}
+              <motion.div
+                key={`right-${currentPair}`}
+                initial={{ x: 50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: 50, opacity: 0 }}
+                className={cn(
+                  "flex-1 max-w-[180px] md:max-w-[220px] p-4 md:p-6 rounded-2xl border-2 transition-all",
+                  showWinner && pair.right.price < pair.left.price
+                    ? "border-success bg-success/10 shadow-lg shadow-success/20"
+                    : "border-border bg-card/50"
+                )}
+              >
+                <div className="w-16 h-16 md:w-20 md:h-20 mx-auto bg-white rounded-xl p-2 mb-4 shadow-md">
+                  <img 
+                    src={`/assets/imagenes/card-header/${pair.right.logo}`} 
+                    alt={pair.right.name}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <p className="text-center font-bold text-foreground text-sm md:text-base">{pair.right.name}</p>
+                <p className="text-center text-xl md:text-2xl font-black text-primary mt-2">{pair.right.price}</p>
+                <p className="text-center text-xs text-muted-foreground">por mes</p>
+                
+                <AnimatePresence>
+                  {showWinner && pair.right.price < pair.left.price && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                      className="flex items-center justify-center gap-1 mt-3 text-success text-xs font-bold"
+                    >
+                      <Trophy className="w-4 h-4" /> ¡GANA!
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            </div>
+
+            {/* Battle Features */}
+            <div className="flex flex-wrap justify-center gap-3 mt-6 pt-6 border-t border-border/50">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/50 rounded-full px-3 py-1.5">
+                <Check className="w-3 h-3 text-success" /> Beneficios comparados
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/50 rounded-full px-3 py-1.5">
+                <Check className="w-3 h-3 text-success" /> Clínicas por zona
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/50 rounded-full px-3 py-1.5">
+                <Check className="w-3 h-3 text-success" /> Precio real
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* CTA Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="text-center"
+        >
+          <Button 
+            onClick={onQuoteClick}
+            size="lg"
+            className="bg-gradient-cta hover:opacity-90 text-white font-bold h-16 px-10 rounded-full text-lg md:text-xl shadow-2xl neon-fuchsia transition-all hover:scale-105 group"
+          >
+            <Swords className="mr-2 w-5 h-5 group-hover:rotate-12 transition-transform" />
+            Armar Mi Batalla
+            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </Button>
+          
+          <p className="mt-4 text-sm text-muted-foreground flex items-center justify-center gap-2">
+            <Shield className="w-4 h-4 text-success" />
+            Gratis • Sin compromiso • En 2 minutos
+          </p>
+
+          {/* Trust indicators */}
+          <div className="flex flex-wrap justify-center gap-6 mt-10">
+            <div className="flex items-center gap-2">
+              <div className="flex -space-x-2">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent border-2 border-background" />
+                ))}
+              </div>
+              <span className="text-sm text-muted-foreground">+10.000 usuarios</span>
+            </div>
+            <div className="flex items-center gap-1">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+              ))}
+              <span className="text-sm text-muted-foreground ml-1">4.9/5</span>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Bottom fade */}
+      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-background to-transparent" />
+    </section>
+  );
+};
+
+
+// ################################################
+// ARCHIVO: D:\CV\Proyectos_opeen-Lovable\proyecto-front-react-limpio\blank-canvas-project\src\modules\home\components\organisms\CotizadorEngine.tsx
+// ################################################
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useState, useMemo } from 'react';
+import { CotizadorSidebar } from './CotizadorSidebar';
+import { HomePlanCard } from './HomePlanCard'; 
+// Importamos y casteamos para evitar el error .find
+import rawData from '@/data/cotizaciones_maestras_rows.json';
+const cotizacionesData = rawData as any[]; 
+
+const calcularAporteObraSocial = (sueldo: number) => {
+  const UMBRAL_D = 300000;
+  if (sueldo < UMBRAL_D) return 0;
+  return Math.round(sueldo * 0.0765);
+};
+
+export default function CotizadorEngine() {
+  const [filtros, setFiltros] = useState({
+    edadTitular: 30,
+    edadConyuge: 0,
+    hijos: 0,
+    sueldo: 0
+  });
+
+  const planesEnriquecidos = useMemo(() => {
+    const escenario = cotizacionesData.find(c => 
+      c.edad_1 === filtros.edadTitular && 
+      c.hijos === filtros.hijos
+    );
+
+    if (!escenario) return [];
+
+    try {
+      const listaPlanes = typeof escenario.respuesta === 'string' 
+        ? JSON.parse(escenario.respuesta) 
+        : escenario.respuesta;
+
+      const aporte = calcularAporteObraSocial(filtros.sueldo);
+
+      return listaPlanes.map((p: any) => ({
+        // Adaptamos los datos del JSON a lo que espera HomePlanCard
+        id: p.item_id,
+        name: p.name,
+        item_id: p.item_id,
+        empresa: p.empresa_nombre || "Prepaga",
+        logo: p.logo,
+        price: Math.max(0, p.precio - aporte), // Precio con descuento
+        originalPrice: p.precio,               // Precio de lista
+        attributes: p.atributos?.map((a: any) => a.etiqueta) || [],
+        clinics: p.clinics?.map((c: any) => c.nombre_abreviado || c.nombre) || [],
+        clinicsData: p.clinics || [],
+        copago: p.copago || false,
+        modalidad: filtros.sueldo > 300000 ? 'D' : 'P' // Se lo pasamos dentro del objeto
+      }));
+    } catch (e) {
+      return [];
+    }
+  }, [filtros]);
+
+  return (
+    <div className="container mx-auto py-8">
+      <div className="flex flex-col md:flex-row gap-8 items-start">
+        <CotizadorSidebar filtros={filtros} setFiltros={setFiltros} />
+        <div className="flex-1 w-full space-y-4">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            {planesEnriquecidos.map((planData: any, index: number) => (
+              <HomePlanCard 
+                key={planData.item_id} 
+                plan={planData} // El objeto plan ya lleva la modalidad dentro si quieres
+                index={index}
+                isSelected={false}
+                onSelect={() => {}}
+                onWhatsApp={() => {}}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+// ################################################
+// ARCHIVO: D:\CV\Proyectos_opeen-Lovable\proyecto-front-react-limpio\blank-canvas-project\src\modules\home\components\organisms\CotizadorSidebar.tsx
+// ################################################
+
+import React, { useState } from 'react';
+import { motion } from "framer-motion";
+import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import { Users, User, Baby, Wallet, Settings2, ChevronDown } from 'lucide-react';
+import { cn } from "@/lib/utils";
+
+export function CotizadorSidebar({ filtros, setFiltros }) {
+  const [isOpenMobile, setIsOpenMobile] = useState(false);
+  const esDesregulado = filtros.sueldo > 300000;
+
+  return (
+    <aside className="w-full lg:w-[350px] relative">
+      <div className={cn(
+        "lg:sticky lg:top-24 lg:self-start z-40",
+        "sticky top-[64px] left-0 right-0 w-full lg:relative lg:top-0 transition-all duration-300"
+      )}>
+        <Card className="border-2 border-slate-100 shadow-2xl rounded-b-[2rem] lg:rounded-[2.5rem] overflow-hidden bg-white/95 backdrop-blur-md">
+          
+          {/* HEADER / DISPARADOR (Móvil) */}
+          <div 
+            onClick={() => { if (window.innerWidth < 1024) setIsOpenMobile(!isOpenMobile); }}
+            className="bg-slate-900 p-4 lg:p-6 text-white cursor-pointer lg:cursor-default flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <div className="bg-primary/20 p-1.5 rounded-lg">
+                <Settings2 size={18} className="text-primary-foreground" />
+              </div>
+              <div>
+                <h2 className="text-sm lg:text-xl font-black tracking-tight uppercase">Tu Perfil</h2>
+                <p className="hidden lg:block text-[10px] text-slate-400 font-bold mt-1 uppercase italic">Cálculo en vivo</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 lg:hidden">
+              <div className="text-right">
+                <span className="text-[10px] text-slate-500 block font-bold uppercase">Sueldo</span>
+                <span className="text-sm font-black text-green-400">${filtros.sueldo.toLocaleString()}</span>
+              </div>
+              <motion.div animate={{ rotate: isOpenMobile ? 180 : 0 }}>
+                <ChevronDown size={20} className="text-primary" />
+              </motion.div>
+            </div>
+          </div>
+          
+          {/* CONTENIDO */}
+          <div className={cn(
+            "overflow-hidden transition-all duration-500",
+            isOpenMobile ? "max-h-[85vh] overflow-y-auto" : "max-h-0 lg:max-h-none"
+          )}>
+  <CardContent className="p-6 lg:p-8 space-y-5 bg-white lg:bg-transparent">
+  
+  {/* Leyenda única para el grupo familiar */}
+  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter text-center mb-2">
+    Deslizá para sumar integrantes y ajustar edades
+  </p>
+
+  {/* 1. SLIDER: TITULAR */}
+  <div className="space-y-3">
+    <div className="flex justify-between items-center">
+      <Label className="flex items-center gap-2 text-slate-500 font-bold uppercase text-[10px]">
+        <User size={14} className="text-primary" /> Edad Titular
+      </Label>
+      <span className="font-black text-xl text-slate-900">{filtros.edadTitular} años</span>
+    </div>
+    <Slider 
+      value={[filtros.edadTitular]} 
+      min={18} max={65} step={1}
+      onValueChange={([v]) => setFiltros({...filtros, edadTitular: v})}
+    />
+  </div>
+
+  {/* 2. SLIDER: CÓNYUGE */}
+  <div className="space-y-3">
+    <div className="flex justify-between items-center">
+      <Label className="flex items-center gap-2 text-slate-500 font-bold uppercase text-[10px]">
+        <Users size={14} className="text-primary" /> Cónyuge
+      </Label>
+      <span className={cn(
+        "font-black text-xl transition-colors",
+        filtros.edadConyuge >= 18 ? "text-slate-900" : "text-slate-300 italic text-sm"
+      )}>
+        {filtros.edadConyuge >= 18 ? `${filtros.edadConyuge} años` : "No incluye"}
+      </span>
+    </div>
+    <Slider 
+      value={[filtros.edadConyuge]} 
+      min={0} max={65} step={1}
+      onValueChange={([v]) => {
+        const valReal = (v > 0 && v < 18) ? 18 : v;
+        setFiltros({...filtros, edadConyuge: valReal});
+      }}
+    />
+  </div>
+
+  {/* 3. SLIDER: HIJOS */}
+  <div className="space-y-3">
+    <div className="flex justify-between items-center">
+      <Label className="flex items-center gap-2 text-slate-500 font-bold uppercase text-[10px]">
+        <Baby size={14} className="text-primary" /> Hijos
+      </Label>
+      <span className={cn(
+        "font-black text-xl transition-colors",
+        filtros.hijos > 0 ? "text-slate-900" : "text-slate-300 italic text-sm"
+      )}>
+        {filtros.hijos > 0 ? filtros.hijos : "No incluye"}
+      </span>
+    </div>
+    <Slider 
+      value={[filtros.hijos]} 
+      min={0} max={5} step={1}
+      onValueChange={([v]) => setFiltros({...filtros, hijos: v})}
+    />
+  </div>
+
+  {/* SLIDER: SUELDO (Separado un poco más para jerarquía) */}
+  <div className="space-y-4 pt-4 border-t border-slate-100">
+    <div className="flex justify-between items-center">
+      <Label className="flex items-center gap-2 text-slate-900 font-black text-xs uppercase">
+        <Wallet size={16} className="text-green-500" /> Sueldo Bruto
+      </Label>
+      <span className="font-black text-lg text-green-600">${filtros.sueldo.toLocaleString()}</span>
+    </div>
+    <Slider 
+      value={[filtros.sueldo]} 
+      min={0} max={3000000} step={10000}
+      onValueChange={([v]) => setFiltros({...filtros, sueldo: v})}
+    />
+                
+                {/* INFO BOX */}
+                <div className={cn(
+                  "mt-4 p-4 rounded-3xl border-2 transition-colors",
+                  esDesregulado ? "bg-green-50 border-green-100 text-green-700" : "bg-blue-50 border-blue-100 text-blue-700"
+                )}>
+                  <p className="text-[11px] font-black uppercase mb-1">
+                    Sistema {esDesregulado ? 'Desregulado' : 'Particular'}
+                  </p>
+                  <p className="text-[10px] font-bold opacity-80 leading-tight">
+                    {esDesregulado ? "Aportes de ley bonifican tu plan." : "Valor de cuota pura sin aportes."}
+                  </p>
+                </div>
+              </div>
+
+              {/* BOTÓN MÓVIL */}
+              <button 
+                onClick={() => setIsOpenMobile(false)}
+                className="w-full lg:hidden py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase"
+              >
+                Cerrar Filtros
+              </button>
+            </CardContent>
+          </div>
+        </Card>
+      </div>
+    </aside>
+  );
+}
+
+
+// ################################################
+// ARCHIVO: D:\CV\Proyectos_opeen-Lovable\proyecto-front-react-limpio\blank-canvas-project\src\modules\home\components\organisms\FAQ.tsx
+// ################################################
+
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
+export const FAQ = () => {
+  return (
+    <section className="py-20 bg-slate-50">
+      <div className="container mx-auto px-4 max-w-3xl">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-slate-900 mb-4">Preguntas Frecuentes</h2>
+          <p className="text-slate-500">Resolvemos tus dudas sobre la contratación de planes.</p>
+        </div>
+
+        <Accordion type="single" collapsible className="w-full space-y-4">
+          <AccordionItem value="item-1" className="bg-white border border-slate-200 rounded-2xl px-4 shadow-sm">
+            <AccordionTrigger className="text-slate-800 font-bold hover:text-teal-600 hover:no-underline">
+              ¿El servicio de Vitalia tiene costo?
+            </AccordionTrigger>
+            <AccordionContent className="text-slate-600">
+              No, nuestro servicio es 100% gratuito para vos. Nosotros cobramos una comisión a las prepagas, pero vos pagás exactamente el mismo precio (o menos, gracias a nuestros convenios) que contratando directo.
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="item-2" className="bg-white border border-slate-200 rounded-2xl px-4 shadow-sm">
+            <AccordionTrigger className="text-slate-800 font-bold hover:text-teal-600 hover:no-underline">
+              ¿Puedo derivar mis aportes?
+            </AccordionTrigger>
+            <AccordionContent className="text-slate-600">
+              ¡Sí! Si trabajás en relación de dependencia o sos Monotributista, podés usar tus aportes de ley para pagar parte de la cuota de tu prepaga. Nosotros te ayudamos con el trámite.
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="item-3" className="bg-white border border-slate-200 rounded-2xl px-4 shadow-sm">
+            <AccordionTrigger className="text-slate-800 font-bold hover:text-teal-600 hover:no-underline">
+              ¿Los precios están actualizados?
+            </AccordionTrigger>
+            <AccordionContent className="text-slate-600">
+              Sí, actualizamos nuestra base de datos mensualmente con las listas oficiales de todas las prepagas para garantizarte la información más precisa.
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
+    </section>
+  );
+};
+
+
+// ################################################
+// ARCHIVO: D:\CV\Proyectos_opeen-Lovable\proyecto-front-react-limpio\blank-canvas-project\src\modules\home\components\organisms\HeroSection.tsx
+// ################################################
+
+import { ArrowRight, Star, Users, ShieldCheck, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+interface HeroSectionProps {
+  onQuoteClick: () => void;
+}
+
+export const HeroSection = ({ onQuoteClick }: HeroSectionProps) => {
+  return (
+    <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-background">
+      
+      {/* ANIMATED BLOBS (Ambient Background) */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Violet Blob */}
+        <div className="absolute top-0 -left-4 w-72 h-72 md:w-96 md:h-96 bg-primary/30 rounded-full mix-blend-screen filter blur-3xl opacity-70 animate-blob" />
+        {/* Cyan Blob */}
+        <div className="absolute top-0 -right-4 w-72 h-72 md:w-96 md:h-96 bg-secondary/30 rounded-full mix-blend-screen filter blur-3xl opacity-70 animate-blob animation-delay-2000" />
+        {/* Fuchsia Blob */}
+        <div className="absolute -bottom-8 left-20 w-72 h-72 md:w-96 md:h-96 bg-accent/30 rounded-full mix-blend-screen filter blur-3xl opacity-70 animate-blob animation-delay-4000" />
+        
+        {/* Radial gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-hero" />
+        
+        {/* Grid pattern */}
+        <div 
+          className="absolute inset-0 opacity-[0.02]"
+          style={{
+            backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)`,
+            backgroundSize: '50px 50px'
+          }}
+        />
+      </div>
+
+      {/* CONTENT */}
+      <div className="container mx-auto px-4 relative z-20 flex flex-col lg:flex-row items-center justify-between gap-12 py-20">
+        
+        {/* Text Content */}
+        <div className="text-foreground max-w-2xl text-center lg:text-left">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 glass-button rounded-full px-4 py-2 mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <Sparkles className="text-primary w-4 h-4" />
+            <span className="text-sm font-medium text-muted-foreground">Elegido por +10.000 familias</span>
+          </div>
+          
+          {/* Headline */}
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight mb-6 animate-in fade-in slide-in-from-bottom-6 duration-1000">
+            <span className="text-gradient">La salud</span> que querés,
+            <br />
+            <span className="text-foreground">al precio que podés.</span>
+          </h1>
+          
+          {/* Subheadline */}
+          <p className="text-lg md:text-xl text-muted-foreground mb-8 font-medium max-w-lg animate-in fade-in slide-in-from-bottom-8 duration-1000 mx-auto lg:mx-0">
+            Comparamos todas las prepagas del país para que encuentres tu plan ideal en menos de 2 minutos.
+          </p>
+          
+          {/* Mobile CTA */}
+          <div className="lg:hidden w-full">
+            <Button 
+              onClick={onQuoteClick}
+              className="w-full bg-gradient-cta hover:opacity-90 text-white font-bold h-14 rounded-full text-lg shadow-xl neon-fuchsia transition-all hover:scale-105"
+            >
+              Cotizar Ahora <ArrowRight className="ml-2" />
+            </Button>
+          </div>
+
+          {/* Stats */}
+          <div className="hidden lg:flex items-center gap-8 mt-10 animate-in fade-in slide-in-from-bottom-10 duration-1000">
+            <div className="text-center">
+              <p className="text-3xl font-black text-gradient">15+</p>
+              <p className="text-sm text-muted-foreground">Prepagas</p>
+            </div>
+            <div className="w-px h-12 bg-border" />
+            <div className="text-center">
+              <p className="text-3xl font-black text-gradient-cyan">200+</p>
+              <p className="text-sm text-muted-foreground">Planes</p>
+            </div>
+            <div className="w-px h-12 bg-border" />
+            <div className="text-center">
+              <p className="text-3xl font-black text-gradient">100%</p>
+              <p className="text-sm text-muted-foreground">Gratis</p>
+            </div>
+          </div>
+        </div>
+
+        {/* GLASS CARD (Desktop) */}
+        <div className="hidden lg:block w-full max-w-md glass-card p-8 animate-in slide-in-from-right-10 duration-1000 animate-float">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-2 h-2 rounded-full bg-primary animate-glow" />
+            <span className="text-xs text-muted-foreground uppercase tracking-wider">Cotizador Inteligente</span>
+          </div>
+          
+          <h3 className="text-2xl font-bold text-foreground mb-2">Encontrá tu Plan</h3>
+          <p className="text-muted-foreground mb-6 text-sm">Completá tus datos y recibí una comparativa personalizada.</p>
+          
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <button 
+                onClick={onQuoteClick} 
+                className="p-4 rounded-2xl glass-strong border-primary/50 text-foreground font-bold text-sm flex flex-col items-center gap-2 transition-all hover:scale-105 hover:neon-violet"
+              >
+                <Users size={24} className="text-primary" /> Para Mí / Pareja
+              </button>
+              <button 
+                onClick={onQuoteClick} 
+                className="p-4 rounded-2xl glass border-white/10 hover:border-primary/30 text-muted-foreground font-bold text-sm flex flex-col items-center gap-2 transition-all hover:scale-105"
+              >
+                <Users size={24} /> Con Hijos
+              </button>
+            </div>
+            
+            <div className="pt-4">
+              <Button 
+                onClick={onQuoteClick}
+                className="w-full bg-gradient-cta hover:opacity-90 text-white font-bold h-14 rounded-xl text-lg shadow-lg neon-fuchsia transition-all hover:scale-105"
+              >
+                Comenzar Cotización <ArrowRight className="ml-2" />
+              </Button>
+            </div>
+            
+            <p className="text-center text-xs text-muted-foreground mt-4 flex items-center justify-center gap-1">
+              <ShieldCheck size={12} className="text-success" /> Tus datos están 100% protegidos
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      {/* Bottom fade */}
+      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-background to-transparent" />
+    </section>
+  );
+};
+
+
+// ################################################
+// ARCHIVO: D:\CV\Proyectos_opeen-Lovable\proyecto-front-react-limpio\blank-canvas-project\src\modules\home\components\organisms\HomeComparisonModal.tsx
+// ################################################
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { motion, AnimatePresence } from "framer-motion";
+import { X, MessageCircle, Trophy, Check, MapPin, Building2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
+import type { HomePlanData, ClinicData } from "./HomePlanCard";
+import { useMemo } from "react";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { Badge } from "@/components/ui/badge"; // ✅ Verificá este import
+import { Sword } from "lucide-react";
+import { featureIcons } from "./HomePlanCard"; // O la ruta correcta a tu archivo
+interface HomeComparisonModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  plans: HomePlanData[];
+  onWhatsApp: (planName: string) => void;
+}
+
+// Orden de regiones para mostrar
+const REGION_ORDER = ["CABA", "GBA Norte", "GBA Oeste", "GBA Sur", "Interior"];
+
+export const HomeComparisonModal = ({ isOpen, onClose, plans, onWhatsApp }: HomeComparisonModalProps) => {
+  // 1. PRIMERO LOS HOOKS (SIEMPRE)
+  const clinicsByZone = useMemo(() => {
+    if (!plans || plans.length < 2) return {};
+
+    const [planA, planB] = plans;
+    const zones: Record<string, { planA: ClinicData[], planB: ClinicData[] }> = {};
+
+    const processPlan = (plan: HomePlanData, side: 'planA' | 'planB') => {
+      // Usar clinicsData que tiene la info completa
+      const clinics = plan.clinicsData || [];
+      
+      clinics.forEach((clinic: ClinicData) => {
+        const zone = clinic.ubicaciones?.region || "Sin región";
+        if (!zones[zone]) zones[zone] = { planA: [], planB: [] };
+        zones[zone][side].push(clinic);
+      });
+    };
+
+    processPlan(planA, 'planA');
+    processPlan(planB, 'planB');
+    
+    // Ordenar las zonas según REGION_ORDER
+    const sortedZones: Record<string, { planA: ClinicData[], planB: ClinicData[] }> = {};
+    
+    REGION_ORDER.forEach(region => {
+      if (zones[region]) {
+        sortedZones[region] = zones[region];
+      }
+    });
+    
+    // Agregar regiones que no están en el orden predefinido
+    Object.keys(zones).forEach(region => {
+      if (!sortedZones[region]) {
+        sortedZones[region] = zones[region];
+      }
+    });
+    
+    return sortedZones;
+  }, [plans]);
+
+  // 2. RECIÉN AHORA EL RETURN TEMPRANO
+  if (!plans || plans.length < 2) return null;
+
+  // 3. VARIABLES DE APOYO
+  const [planA, planB] = plans;
+  const cheaperPlan = planA.price <= planB.price ? "A" : "B";
+
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(value);
+
+  const ComparisonRow = ({ label, valueA, valueB, isPrice = false }: { label: string; valueA: string | boolean; valueB: string | boolean; isPrice?: boolean }) => {
+    const renderValue = (val: string | boolean, isWinner: boolean) => {
+      if (typeof val === "boolean") {
+        return val ? (
+          <Check className={cn("w-5 h-5 mx-auto", isWinner ? "text-green-500" : "text-primary")} />
+        ) : (
+          <X className="w-5 h-5 mx-auto text-muted-foreground/30" />
+        );
+      }
+      return <span className={cn("font-bold", isWinner && isPrice && "text-green-600")}>{val}</span>;
+    };
+
+    return (
+      <div className="grid grid-cols-3 gap-4 py-4 border-b border-border/40 items-center hover:bg-muted/20 transition-colors px-2">
+        <span className="text-xs font-medium text-muted-foreground uppercase tracking-tight">{label}</span>
+        <div className="text-center">{renderValue(valueA, isPrice && cheaperPlan === "A")}</div>
+        <div className="text-center">{renderValue(valueB, isPrice && cheaperPlan === "B")}</div>
+      </div>
+    );
+  };
+
+  const PlanHeader = ({ plan, isWinner, side }: { plan: HomePlanData; isWinner: boolean; side: "A" | "B" }) => (
+    <div className={cn(
+      "relative p-4 rounded-2xl border-2 text-center transition-all duration-500",
+      isWinner ? "border-green-500 bg-green-50/50 shadow-md" : "border-border bg-card"
+    )}>
+      {isWinner && (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-green-600 text-white px-3 py-1 rounded-full text-[10px] font-black flex items-center gap-1 shadow-lg">
+          <Trophy className="w-3 h-3" /> EL MEJOR PRECIO
+        </div>
+      )}
+      <div className="w-14 h-14 mx-auto bg-white rounded-lg p-2 mb-2 shadow-sm border border-border/50">
+        <img src={plan.logo} alt={plan.empresa} className="w-full h-full object-contain" />
+      </div>
+      <h4 className="font-bold text-foreground text-xs truncate mb-1">{plan.name}</h4>
+      <p className="text-xl font-black text-primary leading-none">{formatCurrency(plan.price)}</p>
+    </div>
+  );
+
+  // Contar clínicas por plan
+  const totalClinicsA = planA.clinicsData?.length || 0;
+  const totalClinicsB = planB.clinicsData?.length || 0;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-5xl w-[95vw] max-h-[90vh] flex flex-col">
+        <VisuallyHidden>
+<div className="flex justify-between items-center mb-4">
+<div className="sr-only">
+    <DialogTitle>Comparativa de Planes</DialogTitle>
+    <DialogDescription>
+      Detalles y beneficios de {planA.name} y {planB.name}
+    </DialogDescription>
+  </div>
+{/* 🏷️ Badge corregido: Usamos 2 porque el comparador es de a pares */}
+    <Badge variant="outline" className="font-bold border-primary text-primary bg-primary/10 uppercase text-[9px]">
+      2 Planes en batalla
+    </Badge>
+      
+    </div>          
+        </VisuallyHidden>
+        
+       {/* 📌 CABECERA FIJA ULTRA-COMPACTA */}
+<div className="bg-slate-900 px-4 py-3 text-white shrink-0 z-50 border-b border-white/10">
+  <div className="flex justify-between items-center mb-3">
+    <div className="flex items-center gap-2">
+      <span className="text-sm">⚔️</span>
+      <h2 className="text-xs font-black tracking-tighter italic uppercase">Batalla de Planes</h2>
+    </div>
+    <Badge className="bg-primary/20 text-primary border-primary/30 font-black text-[8px] px-2 py-0 h-4 uppercase">
+      On the Go
+    </Badge>
+  </div>
+
+  {/* 🏢 FILA DE COMPARACIÓN COMPACTA */}
+  <div className="grid grid-cols-2 gap-3">
+    {/* Plan A */}
+    <div className="relative flex items-center gap-3 bg-white/5 p-2 rounded-xl border border-white/5">
+      {/* Indicador de Ganador (Precio más bajo) */}
+      {cheaperPlan === "A" && (
+        <div className="absolute -top-2 -right-1 bg-green-500 text-[8px] font-black px-2 py-0.5 rounded-full shadow-lg animate-bounce">
+          MÁS ECONÓMICO
+        </div>
+      )}
+      <div className="h-10 w-10 shrink-0 bg-white rounded-lg p-1 flex items-center justify-center">
+        <img src={planA.empresas?.logo_url || planA.logo} alt="" className="max-h-full object-contain" />
+      </div>
+      <div className="min-w-0">
+        <h3 className="text-[10px] font-black text-slate-400 uppercase leading-none truncate">{planA.name}</h3>
+        <p className="text-primary font-black text-sm tracking-tighter">${planA.price.toLocaleString()}</p>
+      </div>
+    </div>
+
+    {/* Plan B */}
+    <div className="relative flex items-center gap-3 bg-white/5 p-2 rounded-xl border border-white/5">
+      {cheaperPlan === "B" && (
+        <div className="absolute -top-2 -right-1 bg-green-500 text-[8px] font-black px-2 py-0.5 rounded-full shadow-lg animate-bounce">
+          MÁS ECONÓMICO
+        </div>
+      )}
+      <div className="h-10 w-10 shrink-0 bg-white rounded-lg p-1 flex items-center justify-center">
+        <img src={planB.empresas?.logo_url || planB.logo} alt="" className="max-h-full object-contain" />
+      </div>
+      <div className="min-w-0">
+        <h3 className="text-[10px] font-black text-slate-400 uppercase leading-none truncate">{planB.name}</h3>
+        <p className="text-primary font-black text-sm tracking-tighter">${planB.price.toLocaleString()}</p>
+      </div>
+    </div>
+  </div>
+</div>
+        {/* Cuerpo con Tabs */}
+<div className="flex-1 overflow-y-auto bg-slate-50 custom-scrollbar rounded-t-[1.5rem] -mt-4 relative z-10">
+  <Tabs defaultValue="beneficios" className="w-full flex flex-col">
+{/* 📌 EL STICKY LIST: Se queda pegado al bajar */}
+    <div className="sticky top-0 bg-white/95 backdrop-blur-md z-40 border-b shadow-sm">
+      <TabsList className="w-full justify-around h-11 bg-transparent p-0 gap-0">
+        <TabsTrigger 
+          value="beneficios" 
+          className="flex-1 text-[10px] font-black uppercase h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary transition-all"
+        >
+          Beneficios
+        </TabsTrigger>
+        <TabsTrigger 
+          value="clinicas" 
+          className="flex-1 text-[10px] font-black uppercase h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary transition-all"
+        >
+          Sanatorios
+        </TabsTrigger>
+      </TabsList>
+    </div>
+
+    <div className="p-3 md:p-6">
+<TabsContent value="beneficios" className="mt-0 outline-none">
+  <div className="grid grid-cols-2 gap-3">
+    
+    {/* COLUMNA PLAN A */}
+    <div className="space-y-3">
+      <div className="text-[10px] font-black text-primary uppercase text-center mb-1 tracking-tighter opacity-70">
+        {planA.name}
+      </div>  
+    <div className="flex flex-col gap-2">
+       {console.log("ESTRUCTURA PLAN A:", planA?.plan_prestacion)}
+        {console.log("¿Qué tiene planA realmente?:", planA)}
+  {(planA.plan_prestacion || []).map((item: any, idx: number) => {
+    // 🎯 ACCESO SEGÚN TU JSON:
+    const maestra = item?.prestaciones_maestras;
+    const nombre = maestra?.nombre;
+    const emoji = maestra?.icono_emoji || "✅";
+    const valor = item?.valor;
+
+    if (!nombre) return null;
+
+    return (
+      <div key={idx} className="flex items-center justify-between bg-white border border-slate-100 rounded-xl p-2.5 shadow-sm min-h-[44px]">
+        <div className="flex items-center gap-2 overflow-hidden pl-1">
+          {/* EMOJI DIRECTO */}
+          <span className="text-base shrink-0">{emoji}</span>
+
+          {/* NOMBRE DIRECTO */}
+          <span className="text-[10px] font-black text-slate-700 uppercase leading-tight truncate">
+            {nombre}
+          </span>
+        </div>
+
+        {/* VALOR (Si existe en el JSON) */}
+        {valor && valor.trim() !== "" && (
+          <span className="text-[9px] font-black text-primary mr-2 shrink-0 bg-primary/5 px-1.5 py-1 rounded-lg border border-primary/10 uppercase">
+            {valor}
+          </span>
+        )}
+      </div>
+    );
+  })}
+</div>
+    </div>
+
+    {/* COLUMNA PLAN B */}
+    <div className="space-y-3 border-l border-slate-100 pl-3">
+      <div className="text-[10px] font-black text-slate-500 uppercase text-center mb-1 tracking-tighter opacity-70">
+        {planB.name}
+      </div>
+      <div className="flex flex-col gap-2">
+        {(planB.plan_prestacion || planB.beneficios || planB.attributes || []).map((item: any, idx: number) => {
+          const maestra = item?.prestaciones_maestras;
+          const nombre = typeof item === 'string' ? item : (maestra?.nombre || item?.nombre);
+          const emojiDB = maestra?.icono_emoji;
+          
+          if (!nombre) return null;
+
+          const entry = Object.entries(featureIcons).find(([key]) => 
+            nombre.toLowerCase().includes(key.toLowerCase())
+          );
+          
+          const iconData = entry ? entry[1] : null;
+          const Icon = iconData?.icon;
+          const valor = typeof item === 'object' ? item?.valor : null;
+
+          return (
+            <div key={idx} className="flex items-center justify-between bg-white border border-slate-100 rounded-xl p-2.5 shadow-sm min-h-[48px]">
+              <div className="flex items-center gap-2 overflow-hidden pl-1">
+                {Icon ? (
+                  <div className={cn("p-1.5 rounded-lg shrink-0", iconData.bg, iconData.color)}>
+                    <Icon size={12} />
+                  </div>
+                ) : (
+                  <div className="p-1.5 rounded-lg shrink-0 bg-slate-50 flex items-center justify-center w-[26px] h-[26px]">
+                    <span className="text-sm">{emojiDB || "✅"}</span>
+                  </div>
+                )}
+                <span className="text-[10px] font-black text-slate-700 uppercase leading-tight truncate">
+                  {nombre}
+                </span>
+              </div>
+              {valor && (
+                <span className="text-[9px] font-black text-slate-500 mr-2 shrink-0 bg-slate-50 px-1.5 py-1 rounded-lg border border-slate-200">
+                  {valor}
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
+  </div>
+</TabsContent>
+            <TabsContent value="clinicas" className="mt-0 outline-none">
+              {Object.keys(clinicsByZone).length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Building2 className="w-12 h-12 mx-auto mb-4 opacity-30" />
+                  <p className="text-sm">No hay información de clínicas disponible</p>
+                </div>
+              ) : (
+                Object.entries(clinicsByZone).map(([zone, data]) => (
+                  <div key={zone} className="mb-8">
+                    <div className="flex items-center gap-2 mb-4 border-l-4 border-primary pl-3">
+                      <MapPin className="w-4 h-4 text-primary" />
+                      <h4 className="font-black text-foreground uppercase text-xs tracking-widest">{zone}</h4>
+                      <span className="text-[10px] text-muted-foreground ml-auto">
+                        {data.planA.length} vs {data.planB.length}
+                      </span>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* Plan A Clinics */}
+                      <div className="space-y-2">
+                        {data.planA.length === 0 ? (
+                          <div className="text-[10px] text-muted-foreground/50 italic p-2">
+                            Sin cobertura en esta zona
+                          </div>
+                        ) : (
+                          data.planA.map((clinic, idx) => (
+                            <div key={idx} className="flex items-start gap-2 text-[10px] bg-muted/40 rounded-lg p-2.5 border border-border/50">
+{/* Contenedor del Logo */}
+<div className="w-8 h-8 rounded border bg-white flex items-center justify-center overflow-hidden shrink-0 mt-0.5 shadow-sm">
+  {clinic?.imagenes && clinic.imagenes.length > 0 ? (
+    <img 
+      src={clinic.imagenes[0].url || clinic.imagenes[0].logo || "/placeholder.svg"} 
+      alt={clinic.nombre_abreviado || 'Logo'} 
+      className="w-full h-full object-contain p-0.5"
+      onError={(e) => {
+        // Si la URL está rota o da 404, mostramos el icono de edificio
+        console.log("Error cargando imagen de:", clinic.nombre);
+        e.currentTarget.style.display = 'none';
+        const parent = e.currentTarget.parentElement;
+        if (parent) {
+          parent.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-300"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>';
+        }
+      }}
+    />
+  ) : (
+    <Building2 className="w-4 h-4 text-slate-300" />
+  )}
+</div>                              <div className="flex flex-col">
+                                <span className="font-bold uppercase opacity-80 leading-tight">
+                                  {clinic.nombre_abreviado || clinic.nombre}
+                                </span>
+                                {clinic.ubicaciones?.barrio && (
+                                  <span className="text-muted-foreground text-[9px]">
+                                    {clinic.ubicaciones.barrio}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                      
+                      {/* Plan B Clinics */}
+                      <div className="space-y-2">
+                        {data.planB.length === 0 ? (
+                          <div className="text-[10px] text-muted-foreground/50 italic p-2">
+                            Sin cobertura en esta zona
+                          </div>
+                        ) : (
+                          data.planB.map((clinic, idx) => (
+                            <div key={idx} className="flex items-start gap-2 text-[10px] bg-muted/40 rounded-lg p-2.5 border border-border/50">
+{/* Contenedor del Logo */}
+  <div className="w-8 h-8 rounded border bg-white flex items-center justify-center overflow-hidden shrink-0 mt-0.5 shadow-sm">
+  {clinic?.imagenes && clinic.imagenes.length > 0 && clinic.imagenes[0]?.url ? (
+    <img 
+      src={clinic.imagenes[0].url} 
+      alt={clinic.nombre_abreviado || 'Logo clínica'} 
+      className="w-full h-full object-contain p-0.5"
+      // Si la imagen existe pero no carga (404), mostramos el icono por defecto
+      onError={(e) => {
+        console.error("Error cargando logo de:", clinic.nombre_abreviado);
+        e.currentTarget.style.display = 'none';
+        // Buscamos el elemento hermano (el icono) o forzamos un fallback
+        const parent = e.currentTarget.parentElement;
+        if (parent) parent.innerHTML = '<div class="flex items-center justify-center w-full h-full bg-slate-50"><span class="text-[8px] font-bold text-slate-400">N/A</span></div>';
+      }}
+    />
+  ) : (
+    <Building2 className="w-4 h-4 text-slate-400" />
+  )}
+</div>                      <div className="flex flex-col">
+                                <span className="font-bold uppercase opacity-80 leading-tight">
+                                  {clinic.nombre_abreviado || clinic.nombre}
+                                </span>
+                                {clinic.ubicaciones?.barrio && (
+                                  <span className="text-muted-foreground text-[9px]">
+                                    {clinic.ubicaciones.barrio}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </TabsContent>
+          </div>
+        </Tabs>
+</div>
+        {/* Footer CTAs */}
+        <div className="p-6 border-t border-border bg-card">
+          <div className="grid grid-cols-2 gap-4">
+            <Button
+              onClick={() => onWhatsApp(planA.name)}
+              className="bg-[#25D366] hover:bg-[#20BD5A] text-white font-black h-14 rounded-2xl shadow-xl transition-all"
+            >
+              <MessageCircle className="w-5 h-5 mr-2" />
+              ELEGIR {planA.empresa.toUpperCase()}
+            </Button>
+            <Button
+              onClick={() => onWhatsApp(planB.name)}
+              className="bg-[#25D366] hover:bg-[#20BD5A] text-white font-black h-14 rounded-2xl shadow-xl transition-all"
+            >
+              <MessageCircle className="w-5 h-5 mr-2" />
+              ELEGIR {planB.empresa.toUpperCase()}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+
+// ################################################
+// ARCHIVO: D:\CV\Proyectos_opeen-Lovable\proyecto-front-react-limpio\blank-canvas-project\src\modules\home\components\organisms\HomePlanCard.tsx
+// ################################################
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useMemo, useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  MessageCircle, 
+  Scale, 
+  Check, 
+  Building2, 
+  Sparkles, 
+  Bed, 
+  Brain, 
+  Glasses, 
+  Smile, 
+  Video, 
+  ShieldCheck,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { normalizeLogoPath } from "@/lib/supabase-helpers";
+import React from "react";
+
+export const featureIcons: Record<string, { icon: any; color: string; bg: string }> = {
+  "Habitación Individual": { icon: Bed, color: "text-blue-600", bg: "bg-blue-50" },
+  "Habitación VIP": { icon: Sparkles, color: "text-indigo-600", bg: "bg-indigo-50" },
+  "Ortodoncia": { icon: Smile, color: "text-purple-600", bg: "bg-purple-50" },
+  "Bruxismo": { icon: ShieldCheck, color: "text-orange-600", bg: "bg-orange-50" },
+  "Óptica": { icon: Glasses, color: "text-emerald-600", bg: "bg-emerald-50" },
+  "Salud Mental": { icon: Brain, color: "text-pink-600", bg: "bg-pink-50" },
+  "Video Consulta": { icon: Video, color: "text-cyan-600", bg: "bg-cyan-50" },
+  "Médico a Domicilio": { icon: Building2, color: "text-slate-600", bg: "bg-slate-50" },
+};
+
+
+export interface ClinicData {
+  id?: number;
+  nombre: string;
+  nombre_abreviado?: string;
+  ubicaciones?: {
+    barrio?: string;
+    region?: string;
+    direccion?: string;
+  };
+}
+
+export interface HomePlanData {
+  id: string;
+  name: string;
+  precio_total: number;
+  precio_lista: number;
+  valor_aporte?: number;
+  item_id: string;
+  empresa: string;
+  precio_final?: number;
+  empresas: {
+    nombre: string;
+    logo_url: string;
+    slogan?: string; // Lo que arreglamos antes
+  };
+  logo: string;
+  price: number;
+  originalPrice: number;
+  attributes: string[];
+  slogans?: string[]; // Propiedad necesaria para el Sparkles
+  clinics: string[];
+  clinicsData: ClinicData[];
+  copago: boolean;
+  modalidad?: 'P' | 'D';
+  plan_prestacion?: any[];
+  beneficios?: any[];
+
+}
+
+interface HomePlanCardProps {
+  plan: HomePlanData;
+  isSelected: boolean;
+  onSelect: () => void;
+  onWhatsApp: () => void;
+  index: number;
+}
+
+
+export const HomePlanCard = ({ plan, isSelected, onWhatsApp, onSelect, index }: HomePlanCardProps) => {
+  const [currentTagline, setCurrentTagline] = useState(0);
+// 1. Definimos el límite de ítems a mostrar inicialmente
+
+  const [expanded, setExpanded] = useState(false);// 1. Extraemos los beneficios de forma segura
+  // Si tu relación en Supabase se llama plan_prestacion, usamos eso
+// 1. Extraemos la data real de la relación
+const listaReal = plan.plan_prestacion || [];
+
+// 2. Filtramos solo las que marcaste para mostrar en la Card (listar === true)
+const prestacionesFiltradas = listaReal.filter((p: any) => p.listar === true);
+
+const limit = 4;
+const mostrarPrestaciones = expanded ? prestacionesFiltradas : prestacionesFiltradas.slice(0, limit);
+const TAGLINES = useMemo(() => {
+    // 1. Limpiamos los slogans que vienen de la DB
+    const validSlogans = (plan.slogans || []).filter(s => s && s.trim() !== "");
+
+    // 2. Si no hay nada en la DB, mostramos backups de MARKETING
+    if (validSlogans.length === 0) {
+      return ["Cobertura Nacional", "Atención 24/7", "Tu salud en buenas manos"];
+    }
+
+    return validSlogans;
+  }, [plan.slogans]);
+
+  useEffect(() => {
+    if (TAGLINES.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentTagline((prev) => (prev + 1) % TAGLINES.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [TAGLINES]);
+
+  const discount = Math.round(((plan.originalPrice - plan.price) / plan.originalPrice) * 100);
+
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat("es-AR", { 
+      style: "currency", 
+      currency: "ARS", 
+      maximumFractionDigits: 0 
+    }).format(value);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1, duration: 0.4 }}
+      className={cn(
+        "group relative bg-card border-2 rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 flex flex-col h-full",
+        isSelected 
+          ? "border-primary shadow-xl shadow-primary/20 ring-2 ring-primary/30" 
+          : "border-border hover:border-primary/50"
+      )}
+    >
+      {/* Badge Modalidad */}
+      <div className="absolute top-3 left-3 z-20">
+        <Badge className={cn(
+          "px-2 py-0.5 text-[10px] uppercase font-black border-none",
+          plan.modalidad === 'D' ? "bg-green-500 text-white" : "bg-blue-600 text-white shadow-sm"
+        )}>
+          Mod. {plan.modalidad || 'P'}
+        </Badge>
+      </div>
+
+      {/* Header Logo */}
+      <div className="h-24 flex items-center justify-center p-4 bg-muted/20 border-b border-border/50">
+        <div className="bg-white rounded-2xl p-3 shadow-sm border border-border/50 transition-transform group-hover:scale-105">
+          <img
+            src={normalizeLogoPath(plan.logo)}
+            alt={plan.empresa}
+            className="h-10 w-auto object-contain"
+          />
+        </div>
+      </div>
+
+      <div className="p-5 flex flex-col flex-1">
+        {/* Nombre y Tagline Rotativo */}
+        <div className="mb-4">
+          <h3 className="font-black text-lg text-foreground leading-tight">{plan.name}</h3>
+          <div className="h-4 overflow-hidden mt-1">
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={currentTagline}
+                initial={{ y: 12, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -12, opacity: 0 }}
+                className="text-[10px] text-primary font-bold flex items-center gap-1 uppercase tracking-wider"
+              >
+                <Sparkles size={10} /> {TAGLINES[currentTagline]}
+              </motion.p>
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* Prestaciones Médicas (Attributes) - Filtrando slogans para que no se repitan */}
+      {/* Prestaciones Médicas - Usando data real del objeto */}
+<div className="space-y-2 mb-4">
+  {plan.plan_prestacion
+    ?.filter((pp: any) => pp.listar === true)
+    .slice(0, 4) // Solo mostramos los primeros 4
+    .map((item: any, idx: number) => {
+      const maestra = item?.prestaciones_maestras;
+      const nombre = maestra?.nombre;
+      const emoji = maestra?.icono_emoji || "✅";
+      const valor = item?.valor;
+
+      // 🔍 Mantenemos tu lógica de Lucide para los colores/iconos si existen
+      const entry = Object.entries(featureIcons).find(([key]) => 
+        nombre?.toLowerCase().includes(key.toLowerCase())
+      );
+      
+      const iconData = entry ? entry[1] : { icon: null, color: "text-slate-500", bg: "bg-slate-50" };
+      const Icon = iconData.icon;
+
+      return (
+        <div key={idx} className={cn("flex items-center justify-between gap-2 p-1.5 rounded-xl border border-slate-50 transition-all", iconData.bg)}>
+          <div className="flex items-center gap-2 overflow-hidden">
+            {/* Si hay Icono de Lucide lo usa, si no, usa el Emoji del JSON */}
+            <div className={cn("p-1.5 rounded-lg bg-white shadow-sm shrink-0 flex items-center justify-center w-7 h-7", iconData.color)}>
+              {Icon ? <Icon size={14} /> : <span className="text-sm">{emoji}</span>}
+            </div>
+            
+            <span className="text-[10px] font-bold text-slate-700 truncate uppercase">
+              {nombre}
+            </span>
+          </div>
+
+          {/* 💰 Valor a la derecha (si existe) */}
+          {valor && (
+            <span className="text-[9px] font-black text-primary bg-white/50 px-1.5 py-0.5 rounded-md border border-white shrink-0">
+              {valor}
+            </span>
+          )}
+        </div>
+      );
+    })}
+</div>
+
+        {/* CLÍNICAS DESTACADAS */}
+        <div className="mt-auto">
+          <div className="flex flex-wrap gap-1 mb-4">
+            {plan.clinicsData?.slice(0, 2).map((clinic, idx) => (
+              <Badge key={idx} variant="outline" className="bg-white text-[9px] font-medium py-0 px-2 text-slate-500 border-slate-200">
+                <Building2 size={10} className="mr-1" /> {clinic.nombre_abreviado || clinic.nombre}
+              </Badge>
+            ))}
+            {plan.clinicsData && plan.clinicsData.length > 2 && (
+              <span className="text-[9px] font-bold text-slate-400 self-center ml-1">+{plan.clinicsData.length - 2} más</span>
+            )}
+          </div>
+
+          {/* PRECIO */}
+          <div className="border-t border-dashed border-border pt-4 mb-4">
+            <div className="flex items-end justify-between">
+              <div>
+                <span className="text-[11px] text-destructive/70 line-through font-medium">
+                  {formatCurrency(plan.originalPrice)}
+                </span>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-black text-foreground tracking-tighter">
+                    {formatCurrency(plan.price)}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-bold uppercase">/mes</span>
+                </div>
+              </div>
+              {discount > 0 && (
+                <div className="bg-green-500 text-white text-[10px] font-black px-2 py-1 rounded-lg shadow-sm mb-1">
+                  {discount}% OFF
+                </div>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-2 mt-2">
+              <Badge className={cn(
+                "text-[9px] font-black border",
+                plan.copago 
+                  ? "bg-slate-100 text-slate-500 border-slate-200" 
+                  : "bg-green-50 text-green-600 border-green-200"
+              )}>
+                {plan.copago ? "CON COPAGOS" : "SISTEMA SIN COPAGOS"}
+              </Badge>
+            </div>
+          </div>
+
+          {/* ACCIONES */}
+          <div className="flex gap-2">
+            <Button
+              onClick={(e) => { e.stopPropagation(); onWhatsApp(); }}
+              className="flex-1 bg-[#25D366] hover:bg-[#20BD5A] text-white font-black h-12 rounded-2xl text-sm shadow-md transition-all active:scale-95 group/btn"
+            >
+              <MessageCircle className="w-5 h-5 mr-2 group-hover/btn:animate-bounce" />
+              LO QUIERO
+            </Button>
+            
+            <button
+              onClick={(e) => { e.stopPropagation(); onSelect(); }}
+              className={cn(
+                "w-12 h-12 rounded-2xl border-2 flex items-center justify-center transition-all shadow-sm",
+                isSelected
+                  ? "bg-primary border-primary text-primary-foreground"
+                  : "bg-white border-border text-muted-foreground hover:border-primary/50"
+              )}
+              title="Comparar"
+            >
+              <Scale size={20} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+
+// ################################################
+// ARCHIVO: D:\CV\Proyectos_opeen-Lovable\proyecto-front-react-limpio\blank-canvas-project\src\modules\home\components\organisms\HowItWorks.tsx
+// ################################################
+
+import { motion } from "framer-motion";
+import { MessageCircle, Scale, Trophy, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const WHATSAPP_NUMBER = "5491112345678";
+
+export const HowItWorks = () => {
+  const handleWhatsApp = () => {
+    const message = "Hola! Quiero comparar planes de salud y encontrar el mejor para mí.";
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
+  };
+
+  const steps = [
+    {
+      number: "1",
+      icon: <Scale className="w-8 h-8" />,
+      title: "Elegí 2 planes",
+      description: "Seleccioná los planes que te interesan de nuestra lista para compararlos.",
+      color: "bg-primary/10 text-primary border-primary/20",
+    },
+    {
+      number: "2",
+      icon: <Trophy className="w-8 h-8" />,
+      title: "Mirá la batalla",
+      description: "Compará precios, beneficios y clínicas lado a lado en un duelo visual.",
+      color: "bg-accent/10 text-accent border-accent/20",
+    },
+    {
+      number: "3",
+      icon: <MessageCircle className="w-8 h-8" />,
+      title: "Cotizá por WhatsApp",
+      description: "Contactanos al instante y un asesor te ayuda a cerrar tu plan ideal.",
+      color: "bg-success/10 text-success border-success/20",
+    },
+  ];
+
+  return (
+    <section className="py-20 bg-muted/30">
+      <div className="container mx-auto px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center max-w-3xl mx-auto mb-16"
+        >
+          <h2 className="text-3xl md:text-4xl font-black text-foreground mb-4">
+            Tu plan ideal en <span className="text-gradient">3 pasos</span>
+          </h2>
+          <p className="text-lg text-muted-foreground">
+            Olvidate de llamar a 10 lugares distintos. Nosotros hacemos el trabajo duro por vos.
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-3 gap-8 relative mb-12">
+          {/* Connector line (desktop) */}
+          <div className="hidden md:block absolute top-16 left-[15%] right-[15%] h-0.5 bg-border -z-10" />
+
+          {steps.map((step, index) => (
+            <motion.div
+              key={step.number}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.15 }}
+              className="text-center group"
+            >
+              <div className={`w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg border-2 ${step.color} group-hover:scale-110 transition-transform duration-300`}>
+                {step.icon}
+              </div>
+              <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
+                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground font-black text-sm flex items-center justify-center mx-auto -mt-10 mb-4 shadow-md">
+                  {step.number}
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-3">{step.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{step.description}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center"
+        >
+          <Button
+            onClick={handleWhatsApp}
+            size="lg"
+            className="bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold h-14 px-8 rounded-full text-lg shadow-xl transition-all hover:scale-105 group"
+          >
+            <MessageCircle className="w-5 h-5 mr-2" />
+            Empezar ahora
+            <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+          </Button>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+
+// ################################################
+// ARCHIVO: D:\CV\Proyectos_opeen-Lovable\proyecto-front-react-limpio\blank-canvas-project\src\modules\home\components\organisms\LogosGrid.tsx
+// ################################################
+
+const BRANDS = [
+  { name: "Swiss Medical", logo: "/assets/imagenes/card-header/swissmedical.webp" },
+  { name: "Galeno", logo: "/assets/imagenes/card-header/galeno.webp" },
+  { name: "Osde", logo: "/assets/imagenes/card-header/osde.png" },
+  { name: "Sancor", logo: "/assets/imagenes/card-header/sancorsalud.webp" },
+  { name: "Omint", logo: "/assets/imagenes/card-header/omint.webp" },
+  { name: "Medife", logo: "/assets/imagenes/card-header/medife.webp" },
+];
+
+export const LogosGrid = () => {
+  return (
+    <section className="py-12 bg-slate-50 border-b border-slate-200">
+      <div className="container mx-auto px-4">
+        <p className="text-center text-xs font-bold text-slate-400 uppercase tracking-widest mb-8">
+          Trabajamos con las empresas líderes
+        </p>
+        <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
+          {BRANDS.map((brand, idx) => (
+            <div key={idx} className="group">
+                <img 
+                    src={brand.logo} 
+                    alt={brand.name} 
+                    className="h-8 md:h-10 object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500 transform group-hover:scale-110" 
+                />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+
+// ################################################
+// ARCHIVO: D:\CV\Proyectos_opeen-Lovable\proyecto-front-react-limpio\blank-canvas-project\src\modules\home\components\organisms\PlansSection.tsx
+// ################################################
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Scale, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { HomePlanCard, HomePlanData } from "./HomePlanCard";
+import { HomeComparisonModal } from "./HomeComparisonModal";
+import { CotizadorSidebar } from "./CotizadorSidebar"; 
+import { usePlans } from "@/hooks/usePlans";
+import masterQuotes from '@/data/cotizaciones_maestras_rows.json';
+import { normalizeLogoPath } from "@/lib/supabase-helpers";
+
+const quotes = (masterQuotes as any) as any[];
+
+export const PlansSection = () => {
+  const [selectedPlans, setSelectedPlans] = useState<string[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [filtros, setFiltros] = useState({ 
+    edadTitular: 30, 
+    edadConyuge: 0, 
+    hijos: 0, 
+    sueldo: 0 
+  });
+
+  const { data, isLoading } = usePlans();
+
+  const livePlans = useMemo(() => {
+    // 🛡️ PROTECCIÓN 1: Data de Supabase/Mock
+    if (!data) return [];
+    const dbPlans = Array.isArray(data) ? data : ((data as any).planes || []);
+    if (dbPlans.length === 0) return [];
+
+    // 🛡️ PROTECCIÓN 2: Cotizaciones Maestras
+    const esDesregulado = filtros.sueldo > 300000;
+    const aporteObraSocial = esDesregulado ? Math.round(filtros.sueldo * 0.0765) : 0;
+
+    const targetId = parseInt(
+      `${filtros.edadTitular}${String(filtros.edadConyuge).padStart(2, '0')}${String(filtros.hijos).padStart(2, '0')}${esDesregulado ? '1' : '0'}`
+    );
+    
+   // Aseguramos que la comparación de ID sea como String para evitar fallos
+  const quoteRow = quotes.find(q => String(q.id) === String(targetId));
+  
+  if (!quoteRow) {
+    console.warn("⚠️ No se encontró cotización para ID:", targetId);
+    return [];
+  }
+
+    const preciosMock = typeof quoteRow.respuesta === 'string' 
+      ? JSON.parse(quoteRow.respuesta) 
+      : quoteRow.respuesta;
+
+    if (!Array.isArray(preciosMock)) return [];
+
+    // 🛡️ PROTECCIÓN 3: Mapeo Individual de Planes
+    return dbPlans.map((dbPlan: any) => {
+      if (!dbPlan || !dbPlan.item_id) return null;
+
+      const infoPrecio = preciosMock.find((p: any) => p.item_id === dbPlan.item_id);
+      
+      // Si el plan no tiene precio en el JSON de cotizaciones, no lo mostramos
+      if (!infoPrecio) return null;
+
+      // Extraer prestaciones con seguridad
+      const prestacionesReales = dbPlan.plan_prestacion || [];
+      
+      return {
+        id: String(dbPlan.id),
+        item_id: dbPlan.item_id,
+        name: dbPlan.nombre_plan || "Plan sin nombre",
+        empresa: dbPlan.empresas?.nombre || "Empresa",
+        logo: normalizeLogoPath(dbPlan.empresas?.imagenes?.logo || dbPlan.logo || "/placeholder.svg"),
+        slogans: dbPlan.empresas?.slogans || dbPlan.slogans || [],
+        attributes: [], // Se puede omitir si usas plan_prestacion
+        plan_prestacion: prestacionesReales, 
+        price: Math.max(0, (infoPrecio.precio || 0) - aporteObraSocial),
+        originalPrice: infoPrecio.precio || 0,
+        clinicsData: dbPlan.plan_clinica?.map((pc: any) => pc.clinicas).filter(Boolean) || [],
+        copago: !!dbPlan.tiene_copagos,
+        modalidad: esDesregulado ? 'D' : 'P'
+      };
+    }).filter(Boolean) as HomePlanData[];
+  }, [data, filtros]);
+
+  // 🛡️ PROTECCIÓN 4: Selección de comparativa
+  const selectedPlanData = useMemo(() => {
+    return selectedPlans
+      .map((id) => livePlans.find((p) => String(p.id) === String(id)))
+      .filter(Boolean) as HomePlanData[];
+  }, [selectedPlans, livePlans]);
+
+  const togglePlan = (planId: string) => {
+    setSelectedPlans(prev => 
+      prev.includes(planId) 
+        ? prev.filter(id => id !== planId) 
+        : (prev.length >= 2 ? [prev[1], planId] : [...prev, planId])
+    );
+  };
+
+  if (isLoading) return <div className="py-20 text-center animate-pulse font-bold">Cargando planes...</div>;
+
+  // 🛡️ PROTECCIÓN FINAL: Si no hay planes calculados, avisar al usuario
+  if (livePlans.length === 0) {
+    return (
+      <div className="py-20 text-center text-muted-foreground">
+        <p>No se encontraron planes para los datos ingresados.</p>
+        <p className="text-xs">Verifica la edad y el sueldo en la sidebar.</p>
+      </div>
+    );
+  }
+
+  return (
+    <section className="py-12 bg-background relative min-h-screen">
+      <div className="container mx-auto px-4">
+        <div className="mb-10">
+          <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-2 mb-4">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-sm font-bold text-primary uppercase tracking-wider">Cotizador Online</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-black italic text-foreground">
+            Versus <span className="text-primary">Prepagas</span>
+          </h2>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-8 items-start relative">
+          <aside className="w-full lg:w-[350px] sticky top-[70px] z-40 self-start">
+            <CotizadorSidebar filtros={filtros} setFiltros={setFiltros} />
+          </aside>
+          <main className="flex-1 w-full">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 pb-32">
+              <AnimatePresence mode="popLayout">
+                {livePlans.map((plan, index) => (
+                  <HomePlanCard
+                    key={plan.id}
+                    plan={plan}
+                    index={index}
+                    isSelected={selectedPlans.includes(plan.id)}
+                    onSelect={() => togglePlan(plan.id)}
+                    onWhatsApp={() => window.open(`https://wa.me/5491100000000?text=Consulta por ${plan.name}`)}
+                  />
+                ))}
+              </AnimatePresence>
+            </div>
+          </main>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {selectedPlans.length > 0 && (
+          <motion.div 
+            initial={{ y: 100, x: "-50%" }} 
+            animate={{ y: 0, x: "-50%" }} 
+            exit={{ y: 100, x: "-50%" }}
+            className="fixed bottom-8 left-1/2 z-50 w-[90%] max-w-md"
+          >
+            <div className="bg-card/95 backdrop-blur-xl border border-primary/20 rounded-3xl shadow-2xl p-4 flex items-center justify-between">
+              <div className="flex -space-x-3">
+                {selectedPlanData.map((p) => (
+                  <div key={p.id} className="w-10 h-10 rounded-full border-2 border-background bg-white flex items-center justify-center overflow-hidden">
+                    <img src={p.logo} alt="" className="w-6 h-6 object-contain" />
+                  </div>
+                ))}
+              </div>
+              <Button 
+                onClick={() => setShowModal(true)} 
+                disabled={selectedPlans.length < 2}
+                className="font-bold rounded-xl"
+              >
+                <Scale className="w-4 h-4 mr-2" />
+                {selectedPlans.length === 2 ? "Comparar ahora" : "Selecciona 2"}
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <HomeComparisonModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        plans={selectedPlanData}
+        onWhatsApp={(name) => window.open(`https://wa.me/5491100000000?text=Me interesó el ${name}`)}
+      />
+    </section>
+  );
+};
+
+
+// ################################################
+// ARCHIVO: D:\CV\Proyectos_opeen-Lovable\proyecto-front-react-limpio\blank-canvas-project\src\modules\home\components\organisms\Testimonials.tsx
+// ################################################
+
+import { Star, Quote } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
+
+const REVIEWS = [
+  {
+    name: "María González",
+    role: "Monotributista",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=faces",
+    text: "Encontré un plan de Galeno que me cubre todo lo que necesitaba y pago 30% menos que lo que me ofrecían directo. La atención de Hernán fue impecable.",
+    stars: 5
+  },
+  {
+    name: "Carlos Ruiz",
+    role: "Relación de Dependencia",
+    image: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=150&h=150&fit=crop&crop=faces",
+    text: "No sabía que podía derivar mis aportes de forma tan simple. Me ayudaron con todo el trámite en la AFIP y en 48hs ya tenía mi credencial provisoria.",
+    stars: 5
+  },
+  {
+    name: "Sofía Lemos",
+    role: "Plan Familiar",
+    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=faces",
+    text: "El comparador es excelente, pero lo mejor es que te atiende una persona real. Me explicaron la letra chica de Sancor y Swiss Medical con total honestidad.",
+    stars: 4
+  }
+];
+
+export const Testimonials = () => {
+  return (
+    <section className="py-24 bg-white border-b border-slate-100">
+      <div className="container mx-auto px-4">
+        
+        {/* Header de Sección con "Badge de Confianza" */}
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-100 px-4 py-1 rounded-full mb-6">
+            <div className="flex gap-0.5">
+                {[1,2,3,4,5].map(i => <Star key={i} size={12} className="fill-orange-500 text-orange-500" />)}
+            </div>
+            <span className="text-xs font-bold text-orange-700 uppercase tracking-wide">4.9/5 en Google Reviews</span>
+          </div>
+          
+          <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-4">
+            La experiencia de elegir bien
+          </h2>
+          <p className="text-lg text-slate-500">
+            Miles de argentinos ya mejoraron su cobertura médica con nosotros.
+          </p>
+        </div>
+
+        {/* Grid de Testimonios */}
+        <div className="grid md:grid-cols-3 gap-8">
+          {REVIEWS.map((review, idx) => (
+            <Card key={idx} className="border-0 shadow-lg shadow-slate-200/50 rounded-[2rem] bg-slate-50 hover:-translate-y-2 transition-transform duration-300 relative overflow-hidden group">
+              
+              {/* Decoración de fondo (Comillas gigantes) */}
+              <Quote className="absolute top-4 right-6 text-slate-200 w-24 h-24 rotate-12 opacity-50 group-hover:text-teal-100 group-hover:scale-110 transition-all duration-500" />
+
+              <CardContent className="p-8 relative z-10 flex flex-col h-full">
+                
+                {/* Estrellas */}
+                <div className="flex gap-1 mb-6">
+                  {[...Array(5)].map((_, i) => (
+                    <Star 
+                        key={i} 
+                        size={16} 
+                        className={`${i < review.stars ? "fill-yellow-400 text-yellow-400" : "fill-slate-200 text-slate-200"}`} 
+                    />
+                  ))}
+                </div>
+
+                {/* Texto */}
+                <p className="text-slate-700 leading-relaxed mb-8 flex-grow font-medium">
+                  "{review.text}"
+                </p>
+
+                {/* Usuario */}
+                <div className="flex items-center gap-4 mt-auto pt-6 border-t border-slate-200/60">
+                  <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
+                    <AvatarImage src={review.image} alt={review.name} />
+                    <AvatarFallback className="bg-teal-100 text-teal-700 font-bold">
+                        {review.name.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-bold text-slate-900 text-sm">{review.name}</p>
+                    <p className="text-xs text-slate-500 font-medium">{review.role}</p>
+                  </div>
+                </div>
+
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+      </div>
+    </section>
+  );
+};
+
+
+// ################################################
+// ARCHIVO: D:\CV\Proyectos_opeen-Lovable\proyecto-front-react-limpio\blank-canvas-project\src\modules\home\pages\Index.tsx
+// ################################################
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Helmet } from "react-helmet-async";
+import Layout from "@/layouts/Layout";
+import masterPlanes from "@/data/planes_mock.json";
+import { BattleHeroSection } from "../components/organisms/BattleHeroSection";
+import { PlansSection } from "../components/organisms/PlansSection";
+import { HowItWorks } from "../components/organisms/HowItWorks";
+import { FAQ } from "../components/organisms/FAQ";
+import { Testimonials } from "../components/organisms/Testimonials";
+import { Button } from "@/components/ui/button";
+import { MessageCircle, ArrowRight, Filter, Zap, Shield, Star } from "lucide-react";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+const WHATSAPP_NUMBER = "5491112345678";
+
+const Index = () => {
+  const handleWhatsApp = () => {
+    const message = "Hola! Quiero comparar planes de salud y encontrar el mejor para mí.";
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
+  };
+
+  const empresasArray = [...new Set(masterPlanes.planes.map(p => p.empresas?.nombre).filter(Boolean))];
+  const empresasShort = empresasArray.slice(0, 10).join(", ") + "...";
+
+  return (
+    <Layout>
+      <Helmet>
+        <title>Vitalia | El Comparador de Salud #1 de Argentina</title>
+        <meta name="description" content={`Compará planes de ${empresasShort}. Precios 2026.`} />
+        <meta property="og:title" content="Vitalia: Cotizador de Salud Inteligente" />
+        <meta property="og:image" content="/og-image.jpg" />
+      </Helmet>
+
+      {/* 1. HERO BATTLE - El gran impacto inicial */}
+      <BattleHeroSection onQuoteClick={handleWhatsApp} />
+
+      {/* 2. BARRA DE FILTROS "ASOMBROSA" (Quick Stats & Filter) */}
+      <section className="relative -mt-12 z-40 container mx-auto px-4">
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="bg-white/80 backdrop-blur-2xl border border-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[2.5rem] p-6 md:p-8"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
+            {/* Buscador Rápido Estilo Apple */}
+            <div className="md:col-span-1 border-r border-slate-100 pr-4">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="bg-primary/10 p-2 rounded-xl text-primary">
+                  <Filter size={18} />
+                </div>
+                <span className="font-black text-slate-800 uppercase text-xs tracking-widest">Filtros Pro</span>
+              </div>
+              <p className="text-slate-500 text-sm">Personalizá tu búsqueda</p>
+            </div>
+
+            {/* Chips de Categorías Inteligentes */}
+            <div className="md:col-span-3 flex flex-wrap gap-3">
+              {[
+                { label: "Más Económicos", icon: <Zap size={14} />, color: "hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200" },
+                { label: "Sin Copagos", icon: <Shield size={14} />, color: "hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200" },
+                { label: "Planes Premium", icon: <Star size={14} />, color: "hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200" },
+              ].map((chip, i) => (
+                <button 
+                  key={i}
+                  className={cn(
+                    "flex items-center gap-2 px-5 py-3 rounded-2xl border border-slate-100 bg-slate-50/50 text-slate-600 text-sm font-bold transition-all hover:scale-105 active:scale-95 shadow-sm",
+                    chip.color
+                  )}
+                >
+                  {chip.icon}
+                  {chip.label}
+                </button>
+              ))}
+              
+              {/* Contador de Planes */}
+              <div className="ml-auto hidden xl:flex items-center gap-2 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+                <span className="text-xs font-black uppercase tracking-tighter">
+                  {masterPlanes.planes.length} Planes Online
+                </span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* 3. CARDS DE PLANES (Ahora el usuario llega filtrado) */}
+      <div className="pt-20">
+        <PlansSection />
+      </div>
+
+      <HowItWorks />
+      <Testimonials />
+      <FAQ />
+
+      {/* 4. CTA FINAL CON EFECTO GLASSMISM */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+          <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-primary/30 rounded-full filter blur-[100px] animate-blob" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-400/20 rounded-full filter blur-[100px] animate-blob animation-delay-2000" />
+        </div>
+        
+        <div className="container mx-auto px-4 max-w-4xl relative z-10">
+          <div className="bg-white/40 backdrop-blur-md border border-white/50 rounded-[3rem] p-12 text-center shadow-2xl">
+            <h2 className="text-4xl md:text-6xl font-black mb-8 tracking-tight">
+              ¿Listo para <span className="text-primary underline decoration-primary/30">ahorrar</span>?
+            </h2>
+            <p className="text-slate-600 text-xl mb-12 max-w-2xl mx-auto leading-relaxed">
+              Un asesor experto te ayudará a elegir el plan que mejor se adapte a tu bolsillo y salud.
+            </p>
+            <Button 
+              onClick={handleWhatsApp}
+              className="bg-slate-900 hover:bg-black text-white font-black h-20 px-12 rounded-[2rem] text-xl shadow-[0_20px_40px_rgba(0,0,0,0.2)] transition-all hover:-translate-y-2 flex items-center gap-4 mx-auto"
+            >
+              <MessageCircle className="w-8 h-8 text-[#25D366]" />
+              CHATEAR CON EXPERTO
+              <ArrowRight className="w-6 h-6" />
+            </Button>
+          </div>
+        </div>
+      </section>
+    </Layout>
+  );
+};
+
+export default Index;

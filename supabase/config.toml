@@ -1,0 +1,10 @@
+project_id = "goqiagwxtjhbjdlhpojs"
+
+[functions.submit-quote]
+verify_jwt = false
+
+[functions.generate-pdf]
+verify_jwt = false
+
+[functions.register-vendor]
+verify_jwt = true
