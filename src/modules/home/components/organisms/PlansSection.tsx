@@ -146,6 +146,7 @@ const selectedPlanData = useMemo(() => {
           <aside className="w-full lg:w-[350px] sticky top-0 self-start z-40">
             <CotizadorSidebar filtros={filtros} setFiltros={setFiltros} />
           </aside>
+          
 
           {/* MAIN CONTENT */}
           <main className="flex-1 w-full">
