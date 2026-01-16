@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect } from "react";
 
 const BASE_URL = "https://chatwootv4.avalianonline.com.ar"; // Corregí el https:/ que te faltaba una barra
